@@ -6,6 +6,8 @@
 //  Copyright © 2016 Игорь. All rights reserved.
 //
 
+
+// HOW DOES THE FUCK IT WORKS/////////////////////
 import Foundation
 
 private func factorial(op1: Double) -> Double
