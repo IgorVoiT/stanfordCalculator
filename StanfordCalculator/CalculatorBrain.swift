@@ -39,7 +39,8 @@ class CalculatorBrain {
         "x²": Operation.UnariOperation({$0*$0}),
         "x!": Operation.UnariOperation(factorial)
     ]
-    // fdspinfsdlkdskedpod'sflijk'gj/dfskgl
+
+    
     
     private enum Operation {
         case Constant(Double)
