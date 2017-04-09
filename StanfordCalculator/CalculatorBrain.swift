@@ -21,11 +21,11 @@ class CalculatorBrain {
     
     // MARK: Private properties
     private var accumulator = 0.0
-    private var isPartialResult  = false
     private var description = " "
     private var pending : PendingBinaryOperationInfo?
     private var previous : PreviousBinaryOperationInfo?
     
+    /// Contains symbols and operations, easily can add new operations.
     private var symbolList: Dictionary<String, Operation> = [
         "π" : Operation.Constant(M_PI),
         "e" : Operation.Constant(M_E),
@@ -44,6 +44,8 @@ class CalculatorBrain {
     
     
     // MARK: Private types
+    
+    /// Enum of possible operations.
     private enum Operation {
         case Constant(Double)
         case UnariOperation((Double) -> Double)
@@ -67,7 +69,6 @@ class CalculatorBrain {
         if pending != nil{
             accumulator = pending!.function(pending!.firstOpetand, accumulator)
             pending = nil
-            isPartialResult = false
         }
     }
     
@@ -76,7 +77,7 @@ class CalculatorBrain {
             accumulator = previous!.function(accumulator, previous!.operand)
         }
     }
-    
+    /// Configures a history of user calculations.
     private func configureDescriprion(with symbol: String) {
         let binaryOperations = "−+÷×"
         switch symbol {
@@ -106,7 +107,7 @@ class CalculatorBrain {
     
     // MARK: Public API
     
-    /// This var allows to set pending only to nil (no matter true of false), because we don't need to set pending to anything else in view controller
+    /// This var allows to set pending operation only to nil (no matter true of false), because we don't need to set pending to anything else in view controller
     var pendingOperation: Bool {
         get {
             if pending != nil {
@@ -118,6 +119,7 @@ class CalculatorBrain {
             pending = nil
         }
     }
+    /// This var allows to set previous operation only to nil (no matter true of false), because we don't need to set pending to anything else in view controller
     var previousOperation: Bool {
         get {
             if previous != nil {
@@ -127,13 +129,6 @@ class CalculatorBrain {
         }
         set {
             previous = nil
-        }
-    }
-    
-    
-    var partialResult : Bool {
-        get{
-            return isPartialResult
         }
     }
     
@@ -159,7 +154,6 @@ class CalculatorBrain {
                 executePendingBinaryOperation()
                 pending = PendingBinaryOperationInfo(function: binaryOperation, firstOpetand: accumulator)
                 previous = PreviousBinaryOperationInfo(function: binaryOperation, operand: accumulator)
-                isPartialResult = true
             case .Equals:
                 if pending != nil {
                     previous?.operand = accumulator

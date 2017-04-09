@@ -105,7 +105,7 @@ class CalculatorViewController: UIViewController {
     
     
     
-    /// Perfomrs operation on user tap. All calculation are performing in userInitiated queue, displaing in main queue.
+    /// Perfomrs operation on user tap. All calculation are performing in userInteractive queue, displaing in main queue.
     @IBAction private func performOperation(_ sender: UIButton) {
         if needToCancelPendingOperation && sender.currentTitle != "=" {
             brain.pendingOperation = false
@@ -113,7 +113,6 @@ class CalculatorViewController: UIViewController {
         if displayIsNotEmpty {
             brain.setOperand(operand: displayValue)
             displayIsNotEmpty = false
-            
         }
         DispatchQueue.global(qos: .userInteractive).async {
             if let mathSymbol = sender.currentTitle {
