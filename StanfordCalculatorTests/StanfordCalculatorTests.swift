@@ -51,12 +51,6 @@ class StanfordCalculatorTests: XCTestCase {
         XCTAssertNotNil(brain.getDescription, "must be not nil and equals x...")
     }
     
-    func testPendingOperation(){
-        XCTAssertNil(brain.pending)
-        brain.performOperation(symbol: "−")
-        XCTAssertNotNil(brain.pending, "there is pending operation \" - \" ")
-    }
-    
     func testFactorialOperation() {
         brain.setOperand(operand: 5)
         brain.performOperation(symbol: "x!")
@@ -80,12 +74,6 @@ class StanfordCalculatorTests: XCTestCase {
         XCTAssertLessThan(brain.result, 0, "Failed")
     }
     
-    func testIsPartialResult() {
-        XCTAssertFalse(brain.partialResult)
-        brain.performOperation(symbol: "+")
-        XCTAssertTrue(brain.partialResult)
-    }
-    
     func testPercent() {
         brain.setOperand(operand: 45)
         brain.performOperation(symbol: "%")
@@ -104,12 +92,6 @@ class StanfordCalculatorTests: XCTestCase {
         XCTAssertNotNil(brain.result, "square root from negative is NaN")
     }
     
-    func testReplaceDotsMethod() {
-        let testString = "...3...2...1"
-        brain.setDescription(actionsDescription: testString)
-        brain.replacingOfDotsInHistoryWith(str: " ")
-        XCTAssertNotEqual(brain.getDescription, testString)
-    }
     
     func testSquare() {
         brain.setOperand(operand: 10)

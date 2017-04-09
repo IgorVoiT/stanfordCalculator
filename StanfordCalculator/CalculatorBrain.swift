@@ -7,24 +7,24 @@
 //
 
 
-// HOW DOES THE FUCK IT WORKS/////////////////////
 import Foundation
 
-private func factorial(op1: Double) -> Double
-{
-    if op1 != Double(Int(op1)) || op1 < 1 {return 0}
-    if op1 == 1 {
-        return 1
-    }
-    return op1 * factorial(op1: op1 - 1)
+private func factorial(of number: Double) -> Double {
+    if number > 170 { return Double.infinity }
+    if number != Double(Int(number)) || number < 1 { return 0 }
+    if number == 1 { return 1 }
+    return number * factorial(of: number - 1)
 }
+
 
 class CalculatorBrain {
     
-    
+    // MARK: Private properties
     private var accumulator = 0.0
     private var isPartialResult  = false
-    private var description = ""
+    private var description = " "
+    private var pending : PendingBinaryOperationInfo?
+    private var previous : PreviousBinaryOperationInfo?
     
     private var symbolList: Dictionary<String, Operation> = [
         "π" : Operation.Constant(M_PI),
@@ -41,9 +41,9 @@ class CalculatorBrain {
         "x²": Operation.UnariOperation({$0*$0}),
         "x!": Operation.UnariOperation(factorial)
     ]
-
     
     
+    // MARK: Private types
     private enum Operation {
         case Constant(Double)
         case UnariOperation((Double) -> Double)
@@ -51,48 +51,17 @@ class CalculatorBrain {
         case Equals
     }
     
-    func performOperation(symbol: String) {
-        if let operation = symbolList[symbol] {
-            switch operation {
-            case .Constant (let value): accumulator = value
-                setDescription(actionsDescription: getDescription + symbol)
-            case .UnariOperation(let foo): accumulator = foo(accumulator)
-            if isPartialResult {
-                replacingOfDotsInHistoryWith(str: symbol)
-            }
-            else
-            {
-                setDescription(actionsDescription: symbol + getDescription)
-                }
-            case .BinaryOperation (let function):
-                replacingOfDotsInHistoryWith(str: "")
-                executePendingBinaryOperation()
-                pending = PendingBinaryOperationInfo(function: function, firstOpetand: accumulator)
-                isPartialResult = true
-                setDescription(actionsDescription: getDescription + symbol + "...")
-                
-            case .Equals:
-                replacingOfDotsInHistoryWith(str: "")
-                executePendingBinaryOperation()
-                if getDescription.contains("=") {
-                    setDescription(actionsDescription: getDescription.replacingOccurrences(of: "=", with: ""))
-                    setDescription(actionsDescription: getDescription + "=")
-                }
-                else
-                {
-                    setDescription(actionsDescription: getDescription + "=")
-                }
-            }
-        }
+    private struct PendingBinaryOperationInfo {
+        var function: (Double, Double) -> Double
+        var firstOpetand: Double
     }
     
-    func replacingOfDotsInHistoryWith(str: String)
-    {
-        if getDescription.contains("...") {
-            setDescription(actionsDescription: getDescription.replacingOccurrences(of: "...", with: str))
-        }
+    private struct PreviousBinaryOperationInfo {
+        var function: (Double, Double) -> Double
+        var operand: Double
     }
     
+    // MARK: Private functions
     private func executePendingBinaryOperation()
     {
         if pending != nil{
@@ -102,20 +71,65 @@ class CalculatorBrain {
         }
     }
     
-    var pending : PendingBinaryOperationInfo?
-    
-    struct PendingBinaryOperationInfo {
-        var function: (Double, Double) -> Double
-        var firstOpetand: Double
+    private func executePreviousBinaryOperation() {
+        if previous != nil {
+            accumulator = previous!.function(accumulator, previous!.operand)
+        }
     }
     
-    func setOperand(operand: Double) {
-        accumulator = operand
+    private func configureDescriprion(with symbol: String) {
+        let binaryOperations = "−+÷×"
+        switch symbol {
+        case "−", "+", "÷", "×":
+            if binaryOperations.characters.contains(description.characters.last!) {
+                description.characters.removeLast()
+                description += symbol
+            } else {
+                description += symbol
+            }
+        case "x²", "x!":
+            let newSymbol = symbol.characters.dropFirst()
+            for character in binaryOperations.characters {
+                if description.characters.contains(character) && pending == nil {
+                    description.remove(at: description.startIndex)
+                    description = "(" + description + ")"
+                    break
+                }
+            }
+            description += String(newSymbol)
+        default:
+            break
+        }
+        // func not finished
     }
     
-    func setDescription(actionsDescription: String) {
-        description = actionsDescription
+    
+    // MARK: Public API
+    
+    /// This var allows to set pending only to nil (no matter true of false), because we don't need to set pending to anything else in view controller
+    var pendingOperation: Bool {
+        get {
+            if pending != nil {
+                return true
+            }
+            return false
+        }
+        set {
+            pending = nil
+        }
     }
+    var previousOperation: Bool {
+        get {
+            if previous != nil {
+                return true
+            }
+            return false
+        }
+        set {
+            previous = nil
+        }
+    }
+    
     
     var partialResult : Bool {
         get{
@@ -134,6 +148,37 @@ class CalculatorBrain {
             return description
         }
     }
+    
+    func performOperation(symbol: String) {
+        if let operation = symbolList[symbol] {
+            configureDescriprion(with: symbol)
+            switch operation {
+            case .Constant (let value): accumulator = value
+            case .UnariOperation(let unariOperation): accumulator = unariOperation(accumulator)
+            case .BinaryOperation (let binaryOperation):
+                executePendingBinaryOperation()
+                pending = PendingBinaryOperationInfo(function: binaryOperation, firstOpetand: accumulator)
+                previous = PreviousBinaryOperationInfo(function: binaryOperation, operand: accumulator)
+                isPartialResult = true
+            case .Equals:
+                if pending != nil {
+                    previous?.operand = accumulator
+                    executePendingBinaryOperation()
+                } else {
+                    executePreviousBinaryOperation()
+                }
+            }
+        }
+    }
+    
+    func setOperand(operand: Double) {
+        accumulator = operand
+    }
+    
+    func setDescription(description: String) {
+        self.description = description
+    }
+    
     
 }
 
