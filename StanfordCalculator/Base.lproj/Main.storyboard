@@ -351,6 +351,7 @@
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="ldd-OD-g0M" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="CzZ-dj-czi"/>
                             <constraint firstAttribute="leadingMargin" secondItem="ldd-OD-g0M" secondAttribute="leading" id="XH6-UB-Mus"/>
@@ -361,6 +362,11 @@
                     <connections>
                         <outlet property="calculatorDisplay" destination="Ylf-ox-dtX" id="Jtp-9U-xTx"/>
                         <outlet property="historyDisplay" destination="Cte-r8-bua" id="R3X-B2-h4h"/>
+                        <outletCollection property="operationButton" destination="COr-TA-3dV" collectionClass="NSMutableArray" id="GhI-uL-Z7A"/>
+                        <outletCollection property="operationButton" destination="Xb0-Ap-V2Y" collectionClass="NSMutableArray" id="5oe-Nh-1AL"/>
+                        <outletCollection property="operationButton" destination="CQa-jh-PA1" collectionClass="NSMutableArray" id="H8m-nM-VEj"/>
+                        <outletCollection property="operationButton" destination="PSH-hV-JaH" collectionClass="NSMutableArray" id="QLG-Vh-aza"/>
+                        <outletCollection property="operationButton" destination="FWc-Dn-qYG" collectionClass="NSMutableArray" id="Nof-ro-76M"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

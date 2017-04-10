@@ -14,6 +14,7 @@ class CalculatorViewController: UIViewController {
     private var needToCancelPendingOperation = false
     private let brain = CalculatorBrain()
     
+    @IBOutlet var operationButton: [UIButton]!
     @IBOutlet private weak var calculatorDisplay: UILabel!
     @IBOutlet private weak var historyDisplay: UILabel!
     
@@ -101,12 +102,14 @@ class CalculatorViewController: UIViewController {
         brain.pendingOperation = false
         historyDisplay.text = " "
         brain.setDescription(description: " ")
+        deselectAllButtons()
     }
     
     
     
     /// Perfomrs operation on user tap. All calculation are performing in userInteractive queue, displaing in main queue.
     @IBAction private func performOperation(_ sender: UIButton) {
+        markButtonAsSelected(sender)
         if needToCancelPendingOperation && sender.currentTitle != "=" {
             brain.pendingOperation = false
         }
@@ -122,6 +125,22 @@ class CalculatorViewController: UIViewController {
             DispatchQueue.main.async {
                 self.displayValue = self.brain.result
                 self.historyDisplay.text = self.brain.getDescription
+            }
+        }
+    }
+    
+    private func markButtonAsSelected(_ button: UIButton) {
+        deselectAllButtons()
+        if button.currentTitle != "=" {
+            button.layer.borderColor = UIColor.black.cgColor
+            button.layer.borderWidth = 2
+        }
+        
+    }
+    private func deselectAllButtons() {
+        for button in operationButton {
+            if button.layer.borderWidth > 0 {
+                button.layer.borderWidth = 0
             }
         }
     }
